@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DT&amp;P — Registro de sesiones</title>
+<title>DT&amp;P — Class Session Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -394,9 +394,9 @@
   <aside class="sidebar">
     <div class="sidebar-head">
       <h1>DT&amp;P</h1>
-      <p>Registro de sesiones de clase</p>
+      <p>Class session tracker · saved locally</p>
     </div>
-    <button class="new-btn" id="newBtn">+ Nueva sesión</button>
+    <button class="new-btn" id="newBtn">+ New session</button>
     <div class="filters" id="filters"></div>
     <div class="session-list" id="sessionList"></div>
   </aside>
@@ -408,7 +408,7 @@
 
 <script>
 const TYPES = {
-  seminarSetup: { label:'Seminar · Configuración inicial', short:'Setup Seminar', accent:'#C97B5E' },
+  seminarSetup: { label:'Seminar · Initial Setup', short:'Setup Seminar', accent:'#C97B5E' },
   seminar:      { label:'Seminar', short:'Seminar', accent:'#B5533C' },
   flipped:      { label:'Flipped Classroom', short:'Flipped', accent:'#3F8F7A' },
   design:       { label:'Design Activity', short:'Design Activity', accent:'#C99A3E' },
@@ -418,51 +418,51 @@ const TYPES = {
 function template(type){
   switch(type){
     case 'seminarSetup': return [
-      { text:'Crear los grupos' },
-      { text:'Asignar tema a cada grupo', hasNote:true, placeholder:'4 temas asignados…' },
-      { text:'Asignar fecha de presentación de cada grupo', hasNote:true, placeholder:'Fechas por grupo…' },
-      { text:'Crear el upload y configurarlo' },
-      { text:'Presentar los grupos en clase y comprobar los miembros de cada grupo', hasNote:true, placeholder:'Miembros por grupo…' },
-      { text:'Dejar espacio para modificaciones hasta fin de semana 2' },
-      { text:'Cerrar grupos definitivos' },
+      { text:'Create the groups' },
+      { text:'Assign a topic to each group', hasNote:true, placeholder:'4 topics assigned…' },
+      { text:'Assign a presentation date to each group', hasNote:true, placeholder:'Dates by group…' },
+      { text:'Create and configure the upload' },
+      { text:'Present the groups in class and check each group’s members', hasNote:true, placeholder:'Members by group…' },
+      { text:'Allow changes until the end of week 2' },
+      { text:'Finalise the groups' },
     ];
     case 'seminar': return [
-      { text:'Actualizar la fecha de entrega del upload para el tema del día' },
-      { text:'Descargar las presentaciones antes de la clase' },
-      { text:'Crear el Wooclap del día' },
-      { text:'Comprobar que el link del Wooclap funciona' },
-      { text:'Anotar miembros presentes', hasNote:true, placeholder:'Nombres…' },
-      { text:'Anotar miembros que más participan', hasNote:true, placeholder:'Nombres…' },
-      { text:'Poner la nota', hasNote:true, placeholder:'Nota…' },
+      { text:'Update the upload deadline for the day’s topic' },
+      { text:'Download the presentations before class' },
+      { text:'Create the Wooclap for the day' },
+      { text:'Check that the Wooclap link works' },
+      { text:'Note the members present', hasNote:true, placeholder:'Names…' },
+      { text:'Note the members who participate most', hasNote:true, placeholder:'Names…' },
+      { text:'Assign the grade', hasNote:true, placeholder:'Grade…' },
     ];
     case 'flipped': return [
-      { text:'Limpiar el Miro board' },
-      { text:'Activar el upload y configurar el deadline' },
-      { text:'Cargar las slides de la clase en WeBeep' },
-      { text:'Tener la lista de presencia de los grupos', hasNote:true, placeholder:'Presentes…' },
-      { text:'Descargar las entregas y proyectarlas' },
-      { text:'Anotar quién presenta de cada grupo', hasNote:true, placeholder:'Nombres…' },
-      { text:'Añadir notas del quiz', hasNote:true, placeholder:'Notas…' },
-      { text:'Añadir notas de la flipped', hasNote:true, placeholder:'Notas…' },
-      { text:'Publicar el PDF de notas en WeBeep' },
-      { text:'Mandar email a ausentes para recuperar la actividad' },
-      { text:'Recoger y añadir nota del grupo ausente', hasNote:true, placeholder:'Nota…' },
+      { text:'Clear the Miro board' },
+      { text:'Activate the upload and set the deadline' },
+      { text:'Upload the class slides to WeBeep' },
+      { text:'Have the group attendance list ready', hasNote:true, placeholder:'Present…' },
+      { text:'Download the submissions and project them' },
+      { text:'Note who presents from each group', hasNote:true, placeholder:'Names…' },
+      { text:'Add quiz grades', hasNote:true, placeholder:'Grades…' },
+      { text:'Add flipped-classroom grades', hasNote:true, placeholder:'Grades…' },
+      { text:'Publish the grades PDF on WeBeep' },
+      { text:'Email absent students about making up the activity' },
+      { text:'Collect the missing group’s work and add the grade', hasNote:true, placeholder:'Grade…' },
     ];
     case 'design': return [
-      { text:'Limpiar el Miro board' },
-      { text:'Activar el upload y configurar el deadline' },
-      { text:'Tener la lista de presencia de los grupos', hasNote:true, placeholder:'Presentes…' },
-      { text:'Descargar las entregas y proyectarlas' },
-      { text:'Anotar quién presenta de cada grupo', hasNote:true, placeholder:'Nombres…' },
-      { text:'Añadir notas del quiz', hasNote:true, placeholder:'Notas…' },
-      { text:'Añadir notas de la actividad', hasNote:true, placeholder:'Notas…' },
-      { text:'Publicar el PDF de notas en WeBeep' },
-      { text:'Mandar email a ausentes para recuperar la actividad' },
-      { text:'Recoger y añadir nota del grupo ausente', hasNote:true, placeholder:'Nota…' },
+      { text:'Clear the Miro board' },
+      { text:'Activate the upload and set the deadline' },
+      { text:'Have the group attendance list ready', hasNote:true, placeholder:'Present…' },
+      { text:'Download the submissions and project them' },
+      { text:'Note who presents from each group', hasNote:true, placeholder:'Names…' },
+      { text:'Add quiz grades', hasNote:true, placeholder:'Grades…' },
+      { text:'Add activity grades', hasNote:true, placeholder:'Grades…' },
+      { text:'Publish the grades PDF on WeBeep' },
+      { text:'Email absent students about making up the activity' },
+      { text:'Collect the missing group’s work and add the grade', hasNote:true, placeholder:'Grade…' },
     ];
     case 'lecture': return [
-      { text:'Pedir las slides al lecturer' },
-      { text:'Cargar las slides en WeBeep' },
+      { text:'Ask the lecturer for the slides' },
+      { text:'Upload the slides to WeBeep' },
     ];
   }
 }
@@ -476,38 +476,61 @@ let state = {
 };
 
 // ---------- storage helpers ----------
+// GitHub Pages is a static host, so data is stored persistently in this browser.
+// localStorage survives refreshes and browser restarts unless site data is cleared.
+const INDEX_KEY = 'dtp-index';
+const SESSION_PREFIX = 'dtp-session-';
+
 async function getIndex(){
   try{
-    const r = await window.storage.get('dtp-index');
-    return r ? JSON.parse(r.value) : [];
-  }catch(e){ return []; }
+    const raw = localStorage.getItem(INDEX_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){
+    console.error('Could not load session index:', e);
+    return [];
+  }
 }
 async function setIndex(arr){
-  try{ await window.storage.set('dtp-index', JSON.stringify(arr)); }catch(e){ console.error(e); }
+  try{
+    localStorage.setItem(INDEX_KEY, JSON.stringify(arr));
+  }catch(e){
+    console.error('Could not save session index:', e);
+  }
 }
 async function getSession(id){
   if(state.sessions[id]) return state.sessions[id];
   try{
-    const r = await window.storage.get('dtp-session-'+id);
-    const s = r ? JSON.parse(r.value) : null;
-    if(s) state.sessions[id] = s;
-    return s;
-  }catch(e){ return null; }
+    const raw = localStorage.getItem(SESSION_PREFIX + id);
+    const session = raw ? JSON.parse(raw) : null;
+    if(session) state.sessions[id] = session;
+    return session;
+  }catch(e){
+    console.error('Could not load session:', e);
+    return null;
+  }
 }
-async function setSession(s){
-  state.sessions[s.id] = s;
-  try{ await window.storage.set('dtp-session-'+s.id, JSON.stringify(s)); }catch(e){ console.error(e); }
+async function setSession(session){
+  state.sessions[session.id] = session;
+  try{
+    localStorage.setItem(SESSION_PREFIX + session.id, JSON.stringify(session));
+  }catch(e){
+    console.error('Could not save session:', e);
+  }
 }
 async function deleteSessionStorage(id){
   delete state.sessions[id];
-  try{ await window.storage.delete('dtp-session-'+id); }catch(e){}
+  try{
+    localStorage.removeItem(SESSION_PREFIX + id);
+  }catch(e){
+    console.error('Could not delete session:', e);
+  }
 }
 
 function fmtDate(d){
   if(!d) return '';
   const parts = d.split('-');
   if(parts.length!==3) return d;
-  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${parseInt(parts[2],10)} ${months[parseInt(parts[1],10)-1]} ${parts[0]}`;
 }
 
@@ -526,7 +549,7 @@ function render(){
 
 function renderFilters(){
   const el = document.getElementById('filters');
-  const opts = [['all','Todas'], ...Object.entries(TYPES).map(([k,v])=>[k,v.short])];
+  const opts = [['all','All'], ...Object.entries(TYPES).map(([k,v])=>[k,v.short])];
   el.innerHTML = opts.map(([key,label])=>
     `<button class="chip ${state.filter===key?'active':''}" data-filter="${key}">${label}</button>`
   ).join('');
@@ -542,7 +565,7 @@ function renderList(){
   items.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.createdAt-a.createdAt );
 
   if(items.length===0){
-    el.innerHTML = `<div class="empty-list">Todavía no hay sesiones${state.filter!=='all' ? ' de este tipo' : ''}. Crea una con “+ Nueva sesión”.</div>`;
+    el.innerHTML = `<div class="empty-list">There are no sessions${state.filter!=='all' ? ' of this type' : ''} yet. Create one with “+ New session”.</div>`;
     return;
   }
 
@@ -555,7 +578,7 @@ function renderList(){
         <span class="badge" style="color:${t.accent}">${t.short}</span>
         <span class="date">${fmtDate(it.date)}</span>
       </div>
-      <div class="label">${it.label ? escapeHtml(it.label) : '(sin título)'}</div>
+      <div class="label">${it.label ? escapeHtml(it.label) : '(untitled)'}</div>
       <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${t.accent}"></div></div>
     </div>`;
   }).join('');
@@ -590,8 +613,8 @@ function renderOverview(el){
 
   el.innerHTML = `
     <div class="overview">
-      <h2>Registro de sesiones</h2>
-      <p class="sub">${total===0 ? 'Sin sesiones creadas todavía.' : `${total} sesión${total===1?'':'es'} registrada${total===1?'':'s'} en total.`}</p>
+      <h2>Session tracker</h2>
+      <p class="sub">${total===0 ? 'No sessions created yet.' : `${total} session${total===1?'':'s'} saved in total.`}</p>
       <div class="stat-grid">
         ${Object.entries(TYPES).map(([k,v])=>`
           <div class="stat-card" style="--card-accent:${v.accent}">
@@ -599,7 +622,7 @@ function renderOverview(el){
             <div class="lbl">${v.short}</div>
           </div>`).join('')}
       </div>
-      <div class="hint">Selecciona una sesión en el panel izquierdo para ver su checklist, o crea una nueva sesión para una fecha y modalidad de clase. Cada sesión guarda su propio progreso y notas, y queda archivada aquí sin perder traza.</div>
+      <div class="hint">Select a session in the left panel to view its checklist, or create a new session for a specific date and class format. Progress and notes are saved automatically in this browser.</div>
     </div>
   `;
 }
@@ -614,10 +637,10 @@ function renderDetail(el, session){
       <div style="flex:1; min-width:0;">
         <span class="type-pill" style="background:${t.accent}22; color:${t.accent}">${t.label}</span>
         <div class="detail-title-row">
-          <input class="label-input" id="labelInput" value="${escapeHtml(session.label||'')}" placeholder="Título / tema / grupo…">
+          <input class="label-input" id="labelInput" value="${escapeHtml(session.label||'')}" placeholder="Title / topic / group…">
         </div>
       </div>
-      <button class="delete-btn" id="deleteBtn">Eliminar</button>
+      <button class="delete-btn" id="deleteBtn">Delete</button>
     </div>
     <input class="date-input" type="date" id="dateInput" value="${session.date||''}">
     <div class="progress-line">
@@ -633,7 +656,7 @@ function renderDetail(el, session){
             </div>
             <div class="item-text">${escapeHtml(item.text)}</div>
           </div>
-          ${item.hasNote ? `<input class="note-input" data-idx="${idx}" placeholder="${escapeHtml(item.placeholder||'Nota…')}" value="${escapeHtml(item.note||'')}">` : ''}
+          ${item.hasNote ? `<input class="note-input" data-idx="${idx}" placeholder="${escapeHtml(item.placeholder||'Note…')}" value="${escapeHtml(item.note||'')}">` : ''}
         </div>
       `).join('')}
     </div>
@@ -651,13 +674,13 @@ function renderDetail(el, session){
   });
   el.querySelectorAll('.note-input').forEach(inp=>{
     inp.onclick = (e)=> e.stopPropagation();
-    inp.onchange = async ()=>{
+    inp.oninput = async ()=>{
       const idx = parseInt(inp.dataset.idx,10);
       session.items[idx].note = inp.value;
       await persistSessionAndIndex(session);
     };
   });
-  document.getElementById('labelInput').onchange = async (e)=>{
+  document.getElementById('labelInput').oninput = async (e)=>{
     session.label = e.target.value;
     await persistSessionAndIndex(session);
     renderList();
@@ -668,7 +691,7 @@ function renderDetail(el, session){
     renderList();
   };
   document.getElementById('deleteBtn').onclick = async ()=>{
-    if(!confirm('¿Eliminar esta sesión? Esta acción no se puede deshacer.')) return;
+    if(!confirm('Delete this session? This action cannot be undone.')) return;
     await deleteSessionStorage(session.id);
     state.index = state.index.filter(i=>i.id!==session.id);
     await setIndex(state.index);
@@ -705,24 +728,24 @@ function openModal(){
   root.innerHTML = `
     <div class="overlay" id="overlay">
       <div class="modal">
-        <h3>Nueva sesión</h3>
+        <h3>New session</h3>
         <div class="field">
-          <label>Modalidad</label>
+          <label>Class format</label>
           <select id="typeSelect">
             ${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}
           </select>
         </div>
         <div class="field">
-          <label>Fecha</label>
+          <label>Date</label>
           <input type="date" id="modalDate" value="${today}">
         </div>
         <div class="field">
-          <label>Título (tema / grupo / clase)</label>
-          <input type="text" id="modalLabel" placeholder="Ej. Tema 2 — Grupo B">
+          <label>Title (topic / group / class)</label>
+          <input type="text" id="modalLabel" placeholder="e.g. Topic 2 — Group B">
         </div>
         <div class="modal-actions">
-          <button class="btn-secondary" id="cancelBtn">Cancelar</button>
-          <button class="btn-primary" id="createBtn">Crear sesión</button>
+          <button class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button class="btn-primary" id="createBtn">Create session</button>
         </div>
       </div>
     </div>
@@ -754,7 +777,7 @@ document.getElementById('newBtn').onclick = openModal;
 // ---------- init ----------
 async function init(){
   const el = document.getElementById('main');
-  el.innerHTML = `<div class="hint" style="margin-top:40px;">Cargando registro…</div>`;
+  el.innerHTML = `<div class="hint" style="margin-top:40px;">Loading sessions…</div>`;
   state.index = await getIndex();
   state.loaded = true;
   render();
