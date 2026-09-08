@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DT&amp;P — Registro de sesiones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#141B22;
+    --panel:#1B2530;
+    --panel-2:#212D3A;
+    --border:#2C3946;
+    --text:#E7ECEF;
+    --text-dim:#8FA0AC;
+    --text-faint:#5E6E79;
+    --seminar:#B5533C;
+    --seminar-setup:#C97B5E;
+    --flipped:#3F8F7A;
+    --design:#C99A3E;
+    --lecture:#5B7FA6;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.serif{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:300px;
+    flex-shrink:0;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    position:sticky;
+    top:0;
+  }
+  .sidebar-head{
+    padding:22px 20px 14px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  .sidebar-head h1{
+    font-size:19px;
+    margin:0 0 2px 0;
+    color:var(--text);
+  }
+  .sidebar-head p{
+    margin:0;
+    font-size:12.5px;
+    color:var(--text-faint);
+  }
+  .new-btn{
+    margin:16px 20px 10px 20px;
+    padding:10px 14px;
+    background:var(--text);
+    color:var(--bg);
+    border:none;
+    border-radius:var(--radius);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:opacity .15s ease;
+  }
+  .new-btn:hover{ opacity:.88; }
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:4px 20px 14px 20px;
+  }
+  .chip{
+    font-size:11.5px;
+    padding:5px 10px;
+    border-radius:100px;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    cursor:pointer;
+    background:transparent;
+    white-space:nowrap;
+  }
+  .chip.active{
+    background:var(--panel-2);
+    color:var(--text);
+    border-color:var(--text-faint);
+  }
+  .session-list{
+    flex:1;
+    overflow-y:auto;
+    padding:4px 12px 20px 12px;
+  }
+  .session-item{
+    padding:11px 12px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    margin-bottom:4px;
+    border-left:3px solid transparent;
+    position:relative;
+  }
+  .session-item:hover{ background:var(--panel-2); }
+  .session-item.selected{ background:var(--panel-2); }
+  .session-item .row1{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:8px;
+  }
+  .session-item .badge{
+    font-size:10.5px;
+    font-weight:600;
+    text-transform:none;
+  }
+  .session-item .date{
+    font-size:10.5px;
+    color:var(--text-faint);
+    white-space:nowrap;
+  }
+  .session-item .label{
+    font-size:13.5px;
+    color:var(--text);
+    margin-top:3px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .progress-track{
+    height:3px;
+    background:var(--border);
+    border-radius:3px;
+    margin-top:8px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    border-radius:3px;
+  }
+  .empty-list{
+    padding:30px 14px;
+    text-align:center;
+    color:var(--text-faint);
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    padding:40px 48px;
+    max-width:760px;
+  }
+  .overview h2{ font-size:24px; margin:0 0 6px 0; }
+  .overview p.sub{ color:var(--text-dim); font-size:14px; margin:0 0 28px 0; }
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:12px;
+    margin-bottom:32px;
+  }
+  .stat-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 16px;
+    border-top:3px solid var(--card-accent, var(--text-faint));
+  }
+  .stat-card .num{ font-family:'Fraunces',serif; font-size:26px; }
+  .stat-card .lbl{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .hint{
+    background:var(--panel);
+    border:1px dashed var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    color:var(--text-dim);
+    font-size:13.5px;
+    line-height:1.6;
+  }
+  /* ---------- Session detail ---------- */
+  .detail-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:6px;
+  }
+  .type-pill{
+    display:inline-block;
+    font-size:11.5px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:100px;
+    margin-bottom:10px;
+  }
+  .detail-title-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .label-input{
+    font-family:'Fraunces',serif;
+    font-size:23px;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    border-bottom:1px solid transparent;
+    padding:2px 0;
+    min-width:120px;
+    flex:1;
+  }
+  .label-input:focus{
+    outline:none;
+    border-bottom:1px solid var(--text-faint);
+  }
+  .date-input{
+    font-family:'Inter',sans-serif;
+    background:var(--panel);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:6px;
+    padding:5px 8px;
+    font-size:12.5px;
+  }
+  .delete-btn{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-faint);
+    border-radius:8px;
+    padding:7px 10px;
+    font-size:12px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .delete-btn:hover{ border-color:#8a4a4a; color:#d98484; }
+  .progress-line{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:16px 0 26px 0;
+  }
+  .progress-line .track{
+    flex:1;
+    height:6px;
+    background:var(--panel-2);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-line .fill{ height:100%; border-radius:6px; }
+  .progress-line .count{ font-size:12.5px; color:var(--text-dim); white-space:nowrap; }
+  .checklist{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .item{
+    padding:12px 4px;
+    border-bottom:1px solid var(--border);
+  }
+  .item:last-child{ border-bottom:none; }
+  .item-row{
+    display:flex;
+    align-items:flex-start;
+    gap:11px;
+    cursor:pointer;
+  }
+  .checkbox{
+    width:19px;
+    height:19px;
+    border-radius:5px;
+    border:1.5px solid var(--text-faint);
+    flex-shrink:0;
+    margin-top:1px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .12s ease, border-color .12s ease;
+  }
+  .checkbox.checked{
+    background:var(--item-accent, var(--text));
+    border-color:var(--item-accent, var(--text));
+  }
+  .checkbox svg{ width:11px; height:11px; display:none; }
+  .checkbox.checked svg{ display:block; }
+  .item-text{
+    font-size:14.5px;
+    line-height:1.4;
+    padding-top:1px;
+  }
+  .item.done .item-text{
+    color:var(--text-faint);
+    text-decoration:line-through;
+    text-decoration-color:var(--text-faint);
+  }
+  .note-input{
+    margin:8px 0 0 30px;
+    width:calc(100% - 30px);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    padding:8px 10px;
+  }
+  .note-input:focus{ outline:none; border-color:var(--text-faint); }
+  .note-input::placeholder{ color:var(--text-faint); }
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(10,14,18,.6);
+    display:flex; align-items:center; justify-content:center;
+    z-index:50;
+  }
+  .modal{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:26px 26px 22px 26px;
+    width:380px;
+    max-width:90vw;
+  }
+  .modal h3{ margin:0 0 18px 0; font-size:19px; }
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  .field select, .field input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:9px 10px;
+    font-family:'Inter',sans-serif;
+    font-size:13.5px;
+  }
+  .field select:focus, .field input:focus{ outline:none; border-color:var(--text-faint); }
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+  }
+  .btn-secondary{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:8px;
+    padding:8px 14px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--text);
+    color:var(--bg);
+    border:none;
+    border-radius:8px;
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+  @media (max-width:720px){
+    .app{ flex-direction:column; }
+    .sidebar{ width:100%; height:auto; position:relative; border-right:none; border-bottom:1px solid var(--border); }
+    .session-list{ max-height:280px; }
+    .main{ padding:26px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <h1>DT&amp;P</h1>
+      <p>Registro de sesiones de clase</p>
+    </div>
+    <button class="new-btn" id="newBtn">+ Nueva sesión</button>
+    <div class="filters" id="filters"></div>
+    <div class="session-list" id="sessionList"></div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+const TYPES = {
+  seminarSetup: { label:'Seminar · Configuración inicial', short:'Setup Seminar', accent:'#C97B5E' },
+  seminar:      { label:'Seminar', short:'Seminar', accent:'#B5533C' },
+  flipped:      { label:'Flipped Classroom', short:'Flipped', accent:'#3F8F7A' },
+  design:       { label:'Design Activity', short:'Design Activity', accent:'#C99A3E' },
+  lecture:      { label:'Lecture', short:'Lecture', accent:'#5B7FA6' },
+};
+
+function template(type){
+  switch(type){
+    case 'seminarSetup': return [
+      { text:'Crear los grupos' },
+      { text:'Asignar tema a cada grupo', hasNote:true, placeholder:'4 temas asignados…' },
+      { text:'Asignar fecha de presentación de cada grupo', hasNote:true, placeholder:'Fechas por grupo…' },
+      { text:'Crear el upload y configurarlo' },
+      { text:'Presentar los grupos en clase y comprobar los miembros de cada grupo', hasNote:true, placeholder:'Miembros por grupo…' },
+      { text:'Dejar espacio para modificaciones hasta fin de semana 2' },
+      { text:'Cerrar grupos definitivos' },
+    ];
+    case 'seminar': return [
+      { text:'Actualizar la fecha de entrega del upload para el tema del día' },
+      { text:'Descargar las presentaciones antes de la clase' },
+      { text:'Crear el Wooclap del día' },
+      { text:'Comprobar que el link del Wooclap funciona' },
+      { text:'Anotar miembros presentes', hasNote:true, placeholder:'Nombres…' },
+      { text:'Anotar miembros que más participan', hasNote:true, placeholder:'Nombres…' },
+      { text:'Poner la nota', hasNote:true, placeholder:'Nota…' },
+    ];
+    case 'flipped': return [
+      { text:'Limpiar el Miro board' },
+      { text:'Activar el upload y configurar el deadline' },
+      { text:'Cargar las slides de la clase en WeBeep' },
+      { text:'Tener la lista de presencia de los grupos', hasNote:true, placeholder:'Presentes…' },
+      { text:'Descargar las entregas y proyectarlas' },
+      { text:'Anotar quién presenta de cada grupo', hasNote:true, placeholder:'Nombres…' },
+      { text:'Añadir notas del quiz', hasNote:true, placeholder:'Notas…' },
+      { text:'Añadir notas de la flipped', hasNote:true, placeholder:'Notas…' },
+      { text:'Publicar el PDF de notas en WeBeep' },
+      { text:'Mandar email a ausentes para recuperar la actividad' },
+      { text:'Recoger y añadir nota del grupo ausente', hasNote:true, placeholder:'Nota…' },
+    ];
+    case 'design': return [
+      { text:'Limpiar el Miro board' },
+      { text:'Activar el upload y configurar el deadline' },
+      { text:'Tener la lista de presencia de los grupos', hasNote:true, placeholder:'Presentes…' },
+      { text:'Descargar las entregas y proyectarlas' },
+      { text:'Anotar quién presenta de cada grupo', hasNote:true, placeholder:'Nombres…' },
+      { text:'Añadir notas del quiz', hasNote:true, placeholder:'Notas…' },
+      { text:'Añadir notas de la actividad', hasNote:true, placeholder:'Notas…' },
+      { text:'Publicar el PDF de notas en WeBeep' },
+      { text:'Mandar email a ausentes para recuperar la actividad' },
+      { text:'Recoger y añadir nota del grupo ausente', hasNote:true, placeholder:'Nota…' },
+    ];
+    case 'lecture': return [
+      { text:'Pedir las slides al lecturer' },
+      { text:'Cargar las slides en WeBeep' },
+    ];
+  }
+}
+
+let state = {
+  index: [],        // [{id,type,date,label,done,total}]
+  sessions: {},      // cache id -> full session
+  selectedId: null,
+  filter: 'all',
+  loaded: false,
+};
+
+// ---------- storage helpers ----------
+async function getIndex(){
+  try{
+    const r = await window.storage.get('dtp-index');
+    return r ? JSON.parse(r.value) : [];
+  }catch(e){ return []; }
+}
+async function setIndex(arr){
+  try{ await window.storage.set('dtp-index', JSON.stringify(arr)); }catch(e){ console.error(e); }
+}
+async function getSession(id){
+  if(state.sessions[id]) return state.sessions[id];
+  try{
+    const r = await window.storage.get('dtp-session-'+id);
+    const s = r ? JSON.parse(r.value) : null;
+    if(s) state.sessions[id] = s;
+    return s;
+  }catch(e){ return null; }
+}
+async function setSession(s){
+  state.sessions[s.id] = s;
+  try{ await window.storage.set('dtp-session-'+s.id, JSON.stringify(s)); }catch(e){ console.error(e); }
+}
+async function deleteSessionStorage(id){
+  delete state.sessions[id];
+  try{ await window.storage.delete('dtp-session-'+id); }catch(e){}
+}
+
+function fmtDate(d){
+  if(!d) return '';
+  const parts = d.split('-');
+  if(parts.length!==3) return d;
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${parseInt(parts[2],10)} ${months[parseInt(parts[1],10)-1]} ${parts[0]}`;
+}
+
+function recalcCounts(items){
+  const total = items.length;
+  const done = items.filter(i=>i.checked).length;
+  return {done, total};
+}
+
+// ---------- rendering ----------
+function render(){
+  renderFilters();
+  renderList();
+  renderMain();
+}
+
+function renderFilters(){
+  const el = document.getElementById('filters');
+  const opts = [['all','Todas'], ...Object.entries(TYPES).map(([k,v])=>[k,v.short])];
+  el.innerHTML = opts.map(([key,label])=>
+    `<button class="chip ${state.filter===key?'active':''}" data-filter="${key}">${label}</button>`
+  ).join('');
+  el.querySelectorAll('.chip').forEach(btn=>{
+    btn.onclick = ()=>{ state.filter = btn.dataset.filter; render(); };
+  });
+}
+
+function renderList(){
+  const el = document.getElementById('sessionList');
+  let items = [...state.index];
+  if(state.filter !== 'all') items = items.filter(i=>i.type===state.filter);
+  items.sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.createdAt-a.createdAt );
+
+  if(items.length===0){
+    el.innerHTML = `<div class="empty-list">Todavía no hay sesiones${state.filter!=='all' ? ' de este tipo' : ''}. Crea una con “+ Nueva sesión”.</div>`;
+    return;
+  }
+
+  el.innerHTML = items.map(it=>{
+    const t = TYPES[it.type];
+    const pct = it.total ? Math.round((it.done/it.total)*100) : 0;
+    return `
+    <div class="session-item ${state.selectedId===it.id?'selected':''}" data-id="${it.id}" style="border-left-color:${t.accent}">
+      <div class="row1">
+        <span class="badge" style="color:${t.accent}">${t.short}</span>
+        <span class="date">${fmtDate(it.date)}</span>
+      </div>
+      <div class="label">${it.label ? escapeHtml(it.label) : '(sin título)'}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${t.accent}"></div></div>
+    </div>`;
+  }).join('');
+
+  el.querySelectorAll('.session-item').forEach(node=>{
+    node.onclick = ()=>{ state.selectedId = node.dataset.id; render(); };
+  });
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.innerText = s;
+  return d.innerHTML;
+}
+
+async function renderMain(){
+  const el = document.getElementById('main');
+  if(!state.selectedId){
+    renderOverview(el);
+    return;
+  }
+  const session = await getSession(state.selectedId);
+  if(!session){ state.selectedId = null; renderOverview(el); return; }
+  renderDetail(el, session);
+}
+
+function renderOverview(el){
+  const counts = {};
+  Object.keys(TYPES).forEach(k=> counts[k]=0);
+  state.index.forEach(i=> counts[i.type] = (counts[i.type]||0)+1 );
+  const total = state.index.length;
+
+  el.innerHTML = `
+    <div class="overview">
+      <h2>Registro de sesiones</h2>
+      <p class="sub">${total===0 ? 'Sin sesiones creadas todavía.' : `${total} sesión${total===1?'':'es'} registrada${total===1?'':'s'} en total.`}</p>
+      <div class="stat-grid">
+        ${Object.entries(TYPES).map(([k,v])=>`
+          <div class="stat-card" style="--card-accent:${v.accent}">
+            <div class="num">${counts[k]||0}</div>
+            <div class="lbl">${v.short}</div>
+          </div>`).join('')}
+      </div>
+      <div class="hint">Selecciona una sesión en el panel izquierdo para ver su checklist, o crea una nueva sesión para una fecha y modalidad de clase. Cada sesión guarda su propio progreso y notas, y queda archivada aquí sin perder traza.</div>
+    </div>
+  `;
+}
+
+function renderDetail(el, session){
+  const t = TYPES[session.type];
+  const {done, total} = recalcCounts(session.items);
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  el.innerHTML = `
+    <div class="detail-head">
+      <div style="flex:1; min-width:0;">
+        <span class="type-pill" style="background:${t.accent}22; color:${t.accent}">${t.label}</span>
+        <div class="detail-title-row">
+          <input class="label-input" id="labelInput" value="${escapeHtml(session.label||'')}" placeholder="Título / tema / grupo…">
+        </div>
+      </div>
+      <button class="delete-btn" id="deleteBtn">Eliminar</button>
+    </div>
+    <input class="date-input" type="date" id="dateInput" value="${session.date||''}">
+    <div class="progress-line">
+      <div class="track"><div class="fill" style="width:${pct}%; background:${t.accent}"></div></div>
+      <div class="count">${done}/${total}</div>
+    </div>
+    <div class="checklist">
+      ${session.items.map((item,idx)=>`
+        <div class="item ${item.checked?'done':''}">
+          <div class="item-row" data-idx="${idx}">
+            <div class="checkbox ${item.checked?'checked':''}" style="--item-accent:${t.accent}">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 12L13 4" stroke="${getContrastColor(t.accent)}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="item-text">${escapeHtml(item.text)}</div>
+          </div>
+          ${item.hasNote ? `<input class="note-input" data-idx="${idx}" placeholder="${escapeHtml(item.placeholder||'Nota…')}" value="${escapeHtml(item.note||'')}">` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // events
+  el.querySelectorAll('.item-row').forEach(row=>{
+    row.onclick = async ()=>{
+      const idx = parseInt(row.dataset.idx,10);
+      session.items[idx].checked = !session.items[idx].checked;
+      await persistSessionAndIndex(session);
+      renderMain();
+      renderList();
+    };
+  });
+  el.querySelectorAll('.note-input').forEach(inp=>{
+    inp.onclick = (e)=> e.stopPropagation();
+    inp.onchange = async ()=>{
+      const idx = parseInt(inp.dataset.idx,10);
+      session.items[idx].note = inp.value;
+      await persistSessionAndIndex(session);
+    };
+  });
+  document.getElementById('labelInput').onchange = async (e)=>{
+    session.label = e.target.value;
+    await persistSessionAndIndex(session);
+    renderList();
+  };
+  document.getElementById('dateInput').onchange = async (e)=>{
+    session.date = e.target.value;
+    await persistSessionAndIndex(session);
+    renderList();
+  };
+  document.getElementById('deleteBtn').onclick = async ()=>{
+    if(!confirm('¿Eliminar esta sesión? Esta acción no se puede deshacer.')) return;
+    await deleteSessionStorage(session.id);
+    state.index = state.index.filter(i=>i.id!==session.id);
+    await setIndex(state.index);
+    state.selectedId = null;
+    render();
+  };
+}
+
+function getContrastColor(hex){
+  // simple luminance check for checkmark color
+  const c = hex.replace('#','');
+  const r = parseInt(c.substring(0,2),16), g = parseInt(c.substring(2,4),16), b = parseInt(c.substring(4,6),16);
+  const lum = (0.299*r + 0.587*g + 0.114*b)/255;
+  return lum > 0.6 ? '#141B22' : '#F5F7F8';
+}
+
+async function persistSessionAndIndex(session){
+  await setSession(session);
+  const idxEntry = state.index.find(i=>i.id===session.id);
+  const {done,total} = recalcCounts(session.items);
+  if(idxEntry){
+    idxEntry.label = session.label;
+    idxEntry.date = session.date;
+    idxEntry.done = done;
+    idxEntry.total = total;
+    await setIndex(state.index);
+  }
+}
+
+// ---------- create modal ----------
+function openModal(){
+  const root = document.getElementById('modalRoot');
+  const today = new Date().toISOString().slice(0,10);
+  root.innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <h3>Nueva sesión</h3>
+        <div class="field">
+          <label>Modalidad</label>
+          <select id="typeSelect">
+            ${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="modalDate" value="${today}">
+        </div>
+        <div class="field">
+          <label>Título (tema / grupo / clase)</label>
+          <input type="text" id="modalLabel" placeholder="Ej. Tema 2 — Grupo B">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="cancelBtn">Cancelar</button>
+          <button class="btn-primary" id="createBtn">Crear sesión</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('cancelBtn').onclick = closeModal;
+  document.getElementById('createBtn').onclick = createSession;
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+
+async function createSession(){
+  const type = document.getElementById('typeSelect').value;
+  const date = document.getElementById('modalDate').value;
+  const label = document.getElementById('modalLabel').value.trim();
+  const id = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  const items = template(type).map(i => ({...i, checked:false, note:''}));
+  const session = { id, type, date, label, items, createdAt: Date.now() };
+  await setSession(session);
+  const {done,total} = recalcCounts(items);
+  state.index.push({ id, type, date, label, done, total, createdAt: session.createdAt });
+  await setIndex(state.index);
+  state.selectedId = id;
+  closeModal();
+  render();
+}
+
+document.getElementById('newBtn').onclick = openModal;
+
+// ---------- init ----------
+async function init(){
+  const el = document.getElementById('main');
+  el.innerHTML = `<div class="hint" style="margin-top:40px;">Cargando registro…</div>`;
+  state.index = await getIndex();
+  state.loaded = true;
+  render();
+}
+init();
+</script>
+</body>
+</html>
